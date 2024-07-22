@@ -1,0 +1,62 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* Custom scrollbar styles */
+.scrollbar-hide {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+  }
+  .scrollbar-hide::-webkit-scrollbar {
+    width: 0px;  /* Safari and Chrome */
+  }
+  
+  .scrollbar-show {
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: #4A5568 #E2E8F0; /* Firefox */
+  }
+  .scrollbar-show::-webkit-scrollbar {
+    width: 5px;  /* Safari and Chrome */
+  }
+  .scrollbar-show::-webkit-scrollbar-thumb {
+    background-color: #4A5568; /* Darker color for thumb */
+    border-radius: 9999px;  /* Round corners */
+  }
+  .scrollbar-show::-webkit-scrollbar-track {
+    background: #E2E8F0;  /* Lighter color for track */
+  }
+
+  .chatUl::-webkit-scrollbar {
+    width: 5px;
+ }
+
+ /* Track */
+.chatUl::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+/* Handle */
+.chatUl::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 5px;
+}
+
+/* Handle on hover */
+.chatUl::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+  
+
+  .bouncing-black{
+    animation: bouncing 1s ease-in-out infinite;
+  }
+
+  @keyframes bouncing {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.2);
+    }
+  }
