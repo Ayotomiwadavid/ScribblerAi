@@ -18,231 +18,227 @@ import { toast } from "react-toastify";
 import CustomHook from "../CustomHook";
 
 const Chat = () => {
-  let navigate = useNavigate();
+  let navigate = useNavigate(); // Initialize navigate function for navigation
 
-  const { currentUserDetails } = useContext(UserContext);
+  const { fetchUserData } = CustomHook(); // Fetch the fetchUserData function from your custom hook
 
-  console.log(currentUserDetails);
+  const { currentUserDetails } = useContext(UserContext); // Get currentUserDetails from UserContext
 
-  // // Ensure currentUserDetails is not null or undefined before destructuring
-  // const {
-  //   password,
-  //   userPhoneNumber,
-  //   email,
-  //   userCountry,
-  //   userLanguage,
-  //   name,
-  //   conversations
-  // } = currentUserDetails;
+  // Fetch user data when the component mounts
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
-  // // Ensure name is properly retrieved and processed
-  // let realName = name?.stringValue || ""; // Ensure realName is defined
+  console.log(currentUserDetails); // Log current user details
 
-  // // Fix the logic to extract the username substring
-  // const userName = realName.substring(
-  //   0,
-  //   realName.indexOf(" ") !== -1 ? realName.indexOf(" ") : realName.length
-  // );
-
-  // useEffect(() => {
-  //   if (!Array.isArray(conversations)) {
-  //     console.error('Conversations is not an array:', conversations);
-  //   }
-  // }, [currentUserDetails]);
-
-//   const loginStatus = localStorage.getItem("loginStatus");
-
-//   console.log(currentUserDetails);
-//   console.log(conversations);
-
-//   useEffect(() => {
-//     if (loginStatus === "false" || loginStatus === null) {
-//       navigate("/userAuth/login");
-//     }
-//   }, [loginStatus, navigate]);
-
-//   let [currentPlan, setCurrentPlan] = useState({});
-//   let [chatPageVisibility, setChatPageVisibility] = useState(false);
-//   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-//   let userPlan = localStorage.getItem("plan");
-
-//   //response message State
-//   const [message, setMessage] = useState(null);
-//   //Prompt Input Value
-//   const [inputValue, setInputValue] = useState(null);
-//   //State to get previous Chat
-//   const [previousChats, setPreviousChats] = useState([]);
-//   //set current Title of conversation
-//   const [currentTitle, setCurrentTitle] = useState(null);
-//   //handling conversation history for ai to remember chats
-//   const [conversationHistory, setConversationHistory] = useState([]);
-//   //giving each conversation a unique id to handle them
-//   const [conversationId, setConversationId] = useState('');
-
-//   const alreadyMadePrompt = [
-//     {
-//       id: 1,
-//       title: "Plan a trip",
-//       description: "I have 4 days holiday from my job so plan paris trip for me.",
-//     },
-//     {
-//       id: 2,
-//       title: "Write Code for me",
-//       description: "Can you write tik tak to game fom me with react js.",
-//     },
-//     {
-//       id: 3,
-//       title: "Article title",
-//       description: "Write me title for a react blog post.",
-//     },
-//   ];
-
-//   const newConversation = () => {
-//     setMessage(null);
-//     setInputValue(null);
-//     setCurrentTitle(null);
-//     setChatPageVisibility(false);
-//     setConversationId(uuidv4());
-//     setConversationHistory([]);
-//   };
-
-//   const toggleSidebar = () => {
-//     setIsSidebarOpen(!isSidebarOpen);
-//   };
-
-//   const addAlreadyMadeInputValue = (selectedItemId) => {
-//     let findIndex = alreadyMadePrompt.find(item => item.id === selectedItemId);
-//     let { title, description } = findIndex;
-//     setInputValue(`${title}. ${description}`);
-//   };
-
-//   const handlePromptInputChange = (e) => {
-//     setInputValue(e.target.value);
-//   };
-
-//   const handlePromptSubmit = async (e) => {
-//     e.preventDefault();
-
-//     const userIdObject = localStorage.getItem('user'); // Get uid from localStorage
-
-//     if (!userIdObject) {
-//         console.error("User ID not found in localStorage");
-//         return;
-//     }
-
-//     const user = JSON.parse(userIdObject);
-//     const { uid } = user;
-
-//     // Use let to allow reassignment
-//     let currentConversationId = conversationId;
-
-//     // Generate a new conversation ID if not present
-//     if (!currentConversationId) {
-//         currentConversationId = `${uid}-${Date.now()}`;
-//         setConversationId(currentConversationId); // Update state with the new conversation ID
-//     }
-
-//     const options = {
-//         method: "POST",
-//         body: JSON.stringify({
-//             uid,
-//             message: inputValue,
-//             conversationId: currentConversationId,
-//             conversationHistory
-//         }),
-//         headers: {
-//             "Content-Type": "application/json",
-//         },
-//     };
-
-//     try {
-//         const response = await fetch("http://localhost:5000/prompt/", options);
-//         const data = await response.json();
-//         setMessage(data.message);
-//         setConversationHistory(data.conversationHistory);
-//         console.log(data.conversationHistory);
-//         setChatPageVisibility(true);
-
-//         if (!currentTitle && inputValue) {
-//             setCurrentTitle(inputValue);
-//         }
-
-//         setPreviousChats(prevChats => [
-//             ...prevChats,
-//             { conversationId: data.conversationId, title: currentTitle || inputValue, role: 'user', content: inputValue },
-//             { conversationId: data.conversationId, title: currentTitle || inputValue, role: 'assistant', content: data.message.content }
-//         ]);
-
-//     } catch (error) {
-//         console.error(error);
-//         toast.error("Failed to communicate with the server.");
-//     }
-// };
-
-//   useEffect(() => {
-//     if (!currentTitle && inputValue && message) {
-//       setCurrentTitle(inputValue);
-//     }
-//     if (currentTitle && inputValue && message) {
-//       setPreviousChats(prevChats => [
-//         ...prevChats,
-//         { conversationId: conversationId, title: currentTitle, role: 'user', content: inputValue },
-//         { conversationId: conversationId, title: currentTitle, role: 'assistant', content: message.content }
-//       ]);
-//     }
-//   }, [message]);
-
-//   const handleChatClick = (uniqueTitle) => {
-//     setCurrentTitle(uniqueTitle);
-//     setMessage(null);
-//     setInputValue(null);
-//     setChatPageVisibility(true);
-//     const selectedChatHistory = previousChats.filter(chat => chat.title === uniqueTitle);
-//     setConversationId(selectedChatHistory[0].conversationId);
-//     setConversationHistory(selectedChatHistory.map(chat => ({ role: chat.role, content: chat.content })));
-//   };
-
-//   const uniqueTitles = Array.from(new Set(previousChats.map(chat => chat.title)));
+  // Ensure currentUserDetails is not null or undefined before destructuring
+  const {
+    name,
+    conversations,
+  } = currentUserDetails || {}; // Provide default empty object to avoid destructuring error
 
 
-//   //This is the plan object to render the user selected plan
-//   let planObject = [
-//     {
-//       planName: "free Trial",
-//       planPrice: "0.00 3days",
-//     },
-//     {
-//       planName: "Premium Package",
-//       planPrice: "$19.00",
-//     },
-//     {
-//       planName: "Corporate Package",
-//       planPrice: "$100.00",
-//     },
-//   ];
+  // Check if conversations is an array whenever currentUserDetails changes
+  useEffect(() => {
+    if (!Array.isArray(conversations)) {
+      console.error('Conversations is not an array:', conversations);
+    }
+  }, [currentUserDetails]);
 
-//   useEffect(() => {
-//     const addCurrentPlan = () => {
-//       let myPlan = planObject.find((plan) => plan.planName === userPlan);
-//       if (myPlan) {
-//         setCurrentPlan(myPlan);
-//       } else {
-//         // Handle case where userPlan doesn't match any planName in planObject
-//         setCurrentPlan({ planName: "Default Plan", planPrice: "$0.00" }); // Example of a default plan
-//       }
-//     };
-//     addCurrentPlan();
-//     console.log(inputValue)
-//   }, [userPlan, inputValue]);
+  const loginStatus = localStorage.getItem("loginStatus"); // Get login status from localStorage
+
+  console.log(currentUserDetails); // Log current user details
+  console.log(conversations); // Log conversations
+
+  // Redirect to login page if user is not logged in
+  useEffect(() => {
+    if (loginStatus === "false" || loginStatus === null) {
+      navigate("/userAuth/login");
+    }
+  }, [loginStatus, navigate]);
+
+  // State declarations
+  let [currentPlan, setCurrentPlan] = useState({});
+  let [chatPageVisibility, setChatPageVisibility] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  let userPlan = localStorage.getItem("plan");
+
+  // State for managing response message
+  const [message, setMessage] = useState(null);
+  // State for prompt input value
+  const [inputValue, setInputValue] = useState(null);
+  // State for storing previous chats
+  const [previousChats, setPreviousChats] = useState([]);
+  // State for current conversation title
+  const [currentTitle, setCurrentTitle] = useState(null);
+  // State for handling conversation history
+  const [conversationHistory, setConversationHistory] = useState([]);
+  // State for assigning unique conversation IDs
+  const [conversationId, setConversationId] = useState('');
+
+  // Predefined prompt options
+  const alreadyMadePrompt = [
+    {
+      id: 1,
+      title: "Plan a trip",
+      description: "I have 4 days holiday from my job so plan paris trip for me.",
+    },
+    {
+      id: 2,
+      title: "Write Code for me",
+      description: "Can you write tik tak to game fom me with react js.",
+    },
+    {
+      id: 3,
+      title: "Article title",
+      description: "Write me title for a react blog post.",
+    },
+  ];
+
+  // Function to start a new conversation
+  const newConversation = () => {
+    setMessage(null);
+    setInputValue(null);
+    setCurrentTitle(null);
+    setChatPageVisibility(false);
+    setConversationId(uuidv4()); // Generate a new unique ID
+    setConversationHistory([]);
+  };
+
+  // Toggle sidebar visibility
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  // Set input value based on selected prompt
+  const addAlreadyMadeInputValue = (selectedItemId) => {
+    let findIndex = alreadyMadePrompt.find(item => item.id === selectedItemId);
+    let { title, description } = findIndex;
+    setInputValue(`${title}. ${description}`);
+  };
+
+  // Handle input change in the prompt field
+  const handlePromptInputChange = (e) => {
+    setInputValue(e.target.value);
+  };
+
+  // Handle prompt submission
+  const handlePromptSubmit = async (e) => {
+    e.preventDefault();
+
+    let currentConversationId = conversationId; // Use current conversation ID
+
+    // Generate a new conversation ID if not present
+    if (!currentConversationId) {
+      currentConversationId = `${Date.now()}`;
+      setConversationId(currentConversationId); // Update state with new conversation ID
+    }
+
+    const options = {
+      method: "POST",
+      credentials: "include", // Ensure cookies are sent with the request
+      body: JSON.stringify({
+        message: inputValue,
+        conversationId: currentConversationId,
+        conversationHistory
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+
+    try {
+      const response = await fetch("http://localhost:5000/prompt/", options); // Make API request
+      const data = await response.json();
+      setMessage(data.message);
+      setConversationHistory(data.conversationHistory);
+      console.log(data.conversationHistory);
+      setChatPageVisibility(true);
+
+      if (!currentTitle && inputValue) {
+        setCurrentTitle(inputValue); // Set current title if not already set
+      }
+
+      // Update previous chats state
+      setPreviousChats(prevChats => [
+        ...prevChats,
+        { conversationId: data.conversationId, title: currentTitle || inputValue, role: 'user', content: inputValue },
+        { conversationId: data.conversationId, title: currentTitle || inputValue, role: 'assistant', content: data.message.content }
+      ]);
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to communicate with the server."); // Show error toast
+    }
+  };
+
+  // Update title and previous chats when message changes
+  useEffect(() => {
+    if (!currentTitle && inputValue && message) {
+      setCurrentTitle(inputValue);
+    }
+    if (currentTitle && inputValue && message) {
+      setPreviousChats(prevChats => [
+        ...prevChats,
+        { conversationId: conversationId, title: currentTitle, role: 'user', content: inputValue },
+        { conversationId: conversationId, title: currentTitle, role: 'assistant', content: message.content }
+      ]);
+    }
+  }, [message]);
+
+  // Handle chat item click
+  const handleChatClick = (uniqueTitle) => {
+    setCurrentTitle(uniqueTitle);
+    setMessage(null);
+    setInputValue(null);
+    setChatPageVisibility(true);
+    const selectedChatHistory = previousChats.filter(chat => chat.title === uniqueTitle);
+    setConversationId(selectedChatHistory[0].conversationId); // Set conversation ID from selected chat
+    setConversationHistory(selectedChatHistory.map(chat => ({ role: chat.role, content: chat.content })));
+  };
+
+  // Get unique titles from previous chats
+  const uniqueTitles = Array.from(new Set(previousChats.map(chat => chat.title)));
+
+  // Plan object for rendering user selected plan
+  let planObject = [
+    {
+      planName: "free Trial",
+      planPrice: "0.00 3days",
+    },
+    {
+      planName: "Premium Package",
+      planPrice: "$19.00",
+    },
+    {
+      planName: "Corporate Package",
+      planPrice: "$100.00",
+    },
+  ];
+
+  // Update current plan based on user plan from localStorage
+  useEffect(() => {
+    const addCurrentPlan = () => {
+      let myPlan = planObject.find((plan) => plan.planName === userPlan);
+      if (myPlan) {
+        setCurrentPlan(myPlan);
+      } else {
+        setCurrentPlan({ planName: "Default Plan", planPrice: "$0.00" }); // Default plan if userPlan not found
+      }
+    };
+    addCurrentPlan();
+    console.log(inputValue);
+  }, [userPlan, inputValue]);
 
   return (
-      // {Object.keys(currentUserDetails).length === 0 ? (
-      //   <div className="w-full h-lvh flex bg-[#F1F5F9] items-center justify-center">
-      //     <Spinner size="xl" color="info" aria-label="Default status example" />
-      //   </div>
-      // ) : (
+    <>
+      {currentUserDetails && Object.keys(currentUserDetails).length === 0 ? (
+        <div className="w-full h-lvh flex bg-[#F1F5F9] items-center justify-center">
+          <Spinner size="xl" color="info" aria-label="Default status example" />
+        </div>
+      ) : (
         <div className="w-full flex flex-col items-center justify-center">
-        {currentUserDetails ? "Hello world" : 'loading..'}          {/* <Header />
+          <Header />
           <section className="w-full relative h-[90vh] md:h-[87vh] bg-[#F1F5F9] gap-3 flex items-center justify-center px-2 py-4 md:px-[3vw]">
             <section
               onClick={toggleSidebar}
@@ -392,13 +388,14 @@ const Chat = () => {
                     <PaperAirplaneIcon className="h-4" />
                   </ButtonIcon>
                 </form>
-              </div> */}
-            {/* </div>
+              </div> 
+            </div>
           </section>
-          <Appfooter /> */}
+          <Appfooter /> 
         </div>
-      // )}
-  );
+      )}
+    </>
+  );  
 };
 
 export default Chat;

@@ -12,7 +12,7 @@ import CustomHook from "../CustomHook";
 const Loginform = () => {
   const navigate = useNavigate();
 
-  const {fetchUserDetails} = CustomHook();
+  const {fetchUserData} = CustomHook();
 
   const {setCurrentUserDetails } = useContext(UserContext);
 
@@ -37,10 +37,11 @@ const Loginform = () => {
     e.preventDefault();
     try {
       const response = await fetch("http://localhost:5000/auth/login", {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
+        credentials: 'include', // Include cookies in the request
         body: JSON.stringify(userDetails),
       });
 
@@ -53,16 +54,14 @@ const Loginform = () => {
       console.log("User logged in successfully:", data);
       toast.success(data.msg);
 
-      const { _fieldsProto } = data.user;
-
       //Setting user details to useContext
-      setCurrentUserDetails(_fieldsProto);
+      setCurrentUserDetails(data.user);
 
       // Set login status to true on successful login
       localStorage.setItem("loginStatus", "true");
 
       //fetch user details using hook
-      await fetchUserDetails()
+      await fetchUserData()
       // Change directory after signin
       navigate("/Userchatbot");
     } catch (error) {

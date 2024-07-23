@@ -1,7 +1,7 @@
 const usermodel = require("../Models/users");
 const bcrypt = require("bcrypt");
 const { admin, db } = require("../firebaseConfig");
-const userPlan = require('../Controllers/subscription');
+const userPlan = require("../Controllers/subscription");
 const { auth, firestore } = require("firebase-admin");
 
 const Register = async (req, res, next) => {
@@ -13,39 +13,38 @@ const Register = async (req, res, next) => {
       });
     }
     try {
-        //REGISTER NEW USER
-        const userRecord = await admin.auth().createUser({
-          email: email,
-          password: password,
-        });
-    
-        //GET USER ID FOR EASE ACCESS
-        let uid = userRecord.uid;
-    
-        res.status(200).json({
-            msg: 'User registration successfull',
-            user: userRecord
-        })
+      //REGISTER NEW USER
+      const userRecord = await admin.auth().createUser({
+        email: email,
+        password: password,
+      });
 
-        //STORE USER DATA IN THE DATABASE
-        const userRef = db.collection("users").doc(uid);
-        await userRef.set({
-            name: name,
-            email: email,
-            password: hashedPassword,
-          });
+      //GET USER ID FOR EASE ACCESS
+      let uid = userRecord.uid;
 
-      } catch (error) {
-        res.status(500).json({
-          msg: error.message,
-        });
-      }
+      res.status(200).json({
+        msg: "User registration successfull",
+        user: userRecord,
+      });
+
+      //STORE USER DATA IN THE DATABASE
+      const userRef = db.collection("users").doc(uid);
+      await userRef.set({
+        name: name,
+        email: email,
+        password: hashedPassword,
+      });
+    } catch (error) {
+      res.status(500).json({
+        msg: error.message,
+      });
+    }
   });
 };
 
 const Login = async (req, res, next) => {
-  let {email, password} = req.body;
-  console.log(email, password);
+  const { email, password } = req.body;
+
   if (!email || !password) {
     return res.status(400).json({ msg: "Missing required fields" });
   }
@@ -71,12 +70,33 @@ const Login = async (req, res, next) => {
       return res.status(400).json({ msg: "Invalid password" });
     }
 
+    // Fetching sub-collection (conversations)
+    const conversationsRef = db
+      .collection("users")
+      .doc(uid)
+      .collection("conversations");
+    const conversationsSnapshot = await conversationsRef.get();
+
+    const conversations = conversationsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+
+    // Combine user data with conversations to prepare for frontend
+    const responseData = {
+      ...userData,
+      conversations: conversations,
+    };
+
+    // Save user info in session
+    req.session.user = { id: uid, email: userDoc.email };
+
     res.status(200).json({
       msg: "Login successful",
-      user: userDoc,
+      user: responseData,
     });
   } catch (error) {
-    console.error('Error logging in user:', error);
+    console.error("Error logging in user:", error);
     res.status(500).json({
       msg: error.message,
     });
@@ -85,7 +105,14 @@ const Login = async (req, res, next) => {
 
 //upading user deatails in db
 const updateUser = async (req, res, next) => {
-  const { currentUserId, userFullName, userPhoneNumber, userCountry, userEmail, userLanguage} = req.body;
+  const {
+    currentUserId,
+    userFullName,
+    userPhoneNumber,
+    userCountry,
+    userEmail,
+    userLanguage,
+  } = req.body;
 
   try {
     // Fetch the user document reference
@@ -95,18 +122,18 @@ const updateUser = async (req, res, next) => {
     const doc = await userRef.get();
     if (!doc.exists) {
       return res.status(404).json({
-        msg: 'User not found',
+        msg: "User not found",
       });
     }
 
     // Prepare the updated data
     let updatedData = {
-      name: userFullName, 
-      userPhoneNumber, 
-      userCountry, 
-      email:userEmail, 
-      userLanguage
-    }
+      name: userFullName,
+      userPhoneNumber,
+      userCountry,
+      email: userEmail,
+      userLanguage,
+    };
 
     // Update the user data in Firestore
     await userRef.update(updatedData);
@@ -118,19 +145,18 @@ const updateUser = async (req, res, next) => {
     }
 
     res.status(200).json({
-      msg: 'User update successful',
+      msg: "User update successful",
       updatedData,
     });
-
   } catch (error) {
     res.status(500).json({
       msg: error.message,
     });
   }
-}
+};
 
 const passwordReset = async (req, res, next) => {
-  const { uid, currentPassword, newPassword} = req.body;
+  const { uid, currentPassword, newPassword } = req.body;
 
   try {
     // Fetch user document from Firestore
@@ -167,7 +193,6 @@ const passwordReset = async (req, res, next) => {
     res.status(200).json({
       msg: "Password reset successful",
     });
-
   } catch (error) {
     res.status(500).json({
       msg: error.message,
@@ -176,43 +201,43 @@ const passwordReset = async (req, res, next) => {
 };
 
 const fetchUserData = async (req, res, next) => {
-  const { currentUserId } = req.body;
+  const userId = req.session.user?.id; // Retrieve UID from session
 
-  if (!currentUserId) {
-      return res.status(400).json({ error: 'User ID is required' });
+  if (!userId) {
+    return res.status(401).json({ error: "User not authenticated" }); // Unauthorized if no UID in session
   }
 
   try {
-      // Reference to the user document in Firestore
-      const userRef = db.collection('users').doc(currentUserId);
-      const userDoc = await userRef.get();
+    // Reference to the user document in Firestore
+    const userRef = db.collection("users").doc(userId);
+    const userDoc = await userRef.get();
 
-      if (!userDoc.exists) {
-          return res.status(404).json({ error: 'User not found' });
-      }
+    if (!userDoc.exists) {
+      return res.status(404).json({ error: "User not found" });
+    }
 
-      const userData = userDoc.data();
+    const userData = userDoc.data();
 
-      //Fetching sub-collection (conversations)
-      const conversationsRef = userRef.collection('conversations');
-      const conversationsSnapshot = await conversationsRef.get();
+    // Fetching sub-collection (conversations)
+    const conversationsRef = userRef.collection("conversations");
+    const conversationsSnapshot = await conversationsRef.get();
 
-      const conversations = conversationsSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-      }));
+    const conversations = conversationsSnapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
-      // Combine user data with conversations to prepare for frontend
-      const responseData = {
-          ...userData,
-          conversations: conversations
-      };
+    // Combine user data with conversations to prepare for frontend
+    const responseData = {
+      ...userData,
+      conversations: conversations,
+    };
 
-      res.json(responseData);
+    res.json(responseData);
   } catch (error) {
-      console.error('Error fetching user data:', error);
-      res.status(500).json({ error: 'Failed to fetch user data' });
+    console.error("Error fetching user data:", error);
+    res.status(500).json({ error: "Failed to fetch user data" });
   }
-}
+};
 
-module.exports = { Register, Login, updateUser, passwordReset, fetchUserData};
+module.exports = { Register, Login, updateUser, passwordReset, fetchUserData };
