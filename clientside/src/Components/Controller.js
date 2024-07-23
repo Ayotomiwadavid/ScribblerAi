@@ -23,7 +23,6 @@ export const UserProvider = ({ children }) => {
       }
 
       const data = await response.json();
-      console.log(data);
       setCurrentUserDetails(data);
       setConversationContext(data.conversations);
     } catch (error) {

@@ -43,7 +43,7 @@ const Chat = () => {
     if (!Array.isArray(conversations)) {
       console.error('Conversations is not an array:', conversations);
     }
-  }, [currentUserDetails]);
+  }, [conversations]);
 
   const loginStatus = localStorage.getItem("loginStatus"); // Get login status from localStorage
 

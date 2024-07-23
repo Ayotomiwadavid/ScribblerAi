@@ -1,22 +1,29 @@
 import { PencilIcon } from "@heroicons/react/24/solid";
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import Button from "../ui/Buttontwo";
 import Dp from "../../Assets/Images/1.jpg";
 import UserContext from "../Controller";
+import CustomHook from "../../CustomHook";
 
 function Overview({ setSelectedIndex }) {
-  const { currentUserDetails } = useContext(UserContext);
+  const { fetchUserData } = CustomHook(); // Fetch the fetchUserData function from your custom hook
+
+  const { currentUserDetails } = useContext(UserContext); // Get currentUserDetails from UserContext
+
+  // Fetch user data when the component mounts
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
 
   // Ensure currentUserDetails is not null or undefined before destructuring
   const {
-    password,
     userPhoneNumber,
     email,
     userCountry,
     userLanguage,
     name,
-    conversations,
-  } = currentUserDetails;
+  } = currentUserDetails || {};
 
   return (
     <div className="p-6">

@@ -63,7 +63,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Header() {
+export default function Header({headerNavType}) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   let [showProfileMenu, setShowProfileMenu] = useState(false);
   const navigate = useNavigate();

@@ -13,7 +13,7 @@ const generateOutput = async (req, res, next) => {
 
   const userId = req.session.user?.id; // Retrieve UID from session
 
-  if (!uid) {
+  if (!userId) {
     return res.status(400).json({ error: "User ID not found in localStorage" });
   }
 
