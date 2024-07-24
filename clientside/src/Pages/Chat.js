@@ -27,12 +27,11 @@ const Chat = () => {
   // Fetch user data when the component mounts
   useEffect(() => {
     fetchUserData();
-  }, []);
-
-  console.log(currentUserDetails); // Log current user details
+  }, [fetchUserData]);
 
   // Ensure currentUserDetails is not null or undefined before destructuring
   const {
+    userId,
     name,
     conversations,
   } = currentUserDetails || {}; // Provide default empty object to avoid destructuring error
@@ -42,13 +41,12 @@ const Chat = () => {
   useEffect(() => {
     if (!Array.isArray(conversations)) {
       console.error('Conversations is not an array:', conversations);
+    }else{
+      setPreviousChats(conversations);
     }
-  }, [conversations]);
+  }, [currentUserDetails, conversations]);
 
   const loginStatus = localStorage.getItem("loginStatus"); // Get login status from localStorage
-
-  console.log(currentUserDetails); // Log current user details
-  console.log(conversations); // Log conversations
 
   // Redirect to login page if user is not logged in
   useEffect(() => {
@@ -130,7 +128,7 @@ const Chat = () => {
 
     // Generate a new conversation ID if not present
     if (!currentConversationId) {
-      currentConversationId = `${Date.now()}`;
+      currentConversationId = `${userId}-${Date.now()}`;
       setConversationId(currentConversationId); // Update state with new conversation ID
     }
 
@@ -152,7 +150,6 @@ const Chat = () => {
       const data = await response.json();
       setMessage(data.message);
       setConversationHistory(data.conversationHistory);
-      console.log(data.conversationHistory);
       setChatPageVisibility(true);
 
       if (!currentTitle && inputValue) {
@@ -167,7 +164,6 @@ const Chat = () => {
       ]);
 
     } catch (error) {
-      console.error(error);
       toast.error("Failed to communicate with the server."); // Show error toast
     }
   };
@@ -184,7 +180,7 @@ const Chat = () => {
         { conversationId: conversationId, title: currentTitle, role: 'assistant', content: message.content }
       ]);
     }
-  }, [message]);
+  }, [message, currentTitle, conversationId, inputValue]);
 
   // Handle chat item click
   const handleChatClick = (uniqueTitle) => {
@@ -238,7 +234,7 @@ const Chat = () => {
         </div>
       ) : (
         <div className="w-full flex flex-col items-center justify-center">
-          <Header />
+          <Header headerNavType='profile' />
           <section className="w-full relative h-[90vh] md:h-[87vh] bg-[#F1F5F9] gap-3 flex items-center justify-center px-2 py-4 md:px-[3vw]">
             <section
               onClick={toggleSidebar}

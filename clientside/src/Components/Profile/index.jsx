@@ -31,7 +31,7 @@ function ProfilePage() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   return (
     <section className="bg-[#F1F5F9]">
-      <Appbar />
+      <Appbar headerNavType='profile'/>
       <Section className="py-10 px-3">
         <Container>
           <div className="flex">

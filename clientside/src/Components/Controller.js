@@ -26,7 +26,7 @@ export const UserProvider = ({ children }) => {
       setCurrentUserDetails(data);
       setConversationContext(data.conversations);
     } catch (error) {
-      console.error("Error fetching user data:", error);
+      console.error("An error Occured:", error);
     } finally {
       setLoading(false);
     }

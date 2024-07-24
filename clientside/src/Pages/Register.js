@@ -6,7 +6,7 @@ import Appfooter from "../Components/Appfooter";
 const Register = () => {
   return (
     <section className="bg-[#F1F5F9] ">
-      <Header />
+      <Header headerNavType='login'/>
       <Registrationform />
       <Appfooter />
     </section>

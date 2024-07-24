@@ -12,17 +12,13 @@ function Settings() {
   const { currentUserDetails } = useContext(UserContext);
 
   const {
+    userId,
     user: {
-      password,
       userPhoneNumber,
       email,
-      userCountry,
-      userLanguage,
       name,
     } = {},
   } = currentUserDetails || {};
-
-  let userId = localStorage.getItem("user");
 
   const [inputsValue, setInputsValue] = useState({});
   const [userUpdatedDetails, setUserUpdatedDetails] = useState({});
@@ -61,16 +57,9 @@ function Settings() {
         );
       }
     } else {
-      const user = JSON.parse(userId);
-      if (!user || !user.uid) {
-        throw new Error("User is not properly defined");
-      }
-      const { uid, emailVerified, disabled, metadata } = user;
-      const { lastSignInTime, creationTime, lastRefreshTime } = metadata;
-
       const { confirmPassword, currentPassword, newPassword } = resetPassword;
       const passwordResetData = {
-        uid,
+        userId,
         confirmPassword,
         currentPassword,
         newPassword,
@@ -106,14 +95,7 @@ function Settings() {
   const HandleUpdateProfile = async () => {
     let { email, fullName, phone } = inputsValue;
 
-    let userId = localStorage.getItem("user");
     try {
-      const user = JSON.parse(userId);
-      if (!user || !user.uid) {
-        throw new Error("User is not properly defined");
-      }
-      const { uid, emailVerified, disabled, metadata } = user;
-      const { lastSignInTime, creationTime, lastRefreshTime } = metadata;
 
       setUserUpdatedDetails({
         userEmail: email,
@@ -121,7 +103,7 @@ function Settings() {
         userPhoneNumber: phone,
         userCountry: selectedCountry.name,
         userLanguage: selectedLanguage.name,
-        currentUserId: uid,
+        currentUserId: userId,
       });
 
       const response = await fetch(

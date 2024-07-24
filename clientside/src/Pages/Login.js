@@ -6,7 +6,7 @@ import Loginform from "../Components/Loginform";
 const Login = () => {
   return (
     <section className="bg-[#F1F5F9]">
-      <Header />
+      <Header headerNavType='registration'/>
       <Loginform />
       <Appfooter />
     </section>

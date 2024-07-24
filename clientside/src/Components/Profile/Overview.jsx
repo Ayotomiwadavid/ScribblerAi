@@ -47,10 +47,10 @@ function Overview({ setSelectedIndex }) {
                 setSelectedIndex(2);
               }}
               size="sm"
-              className="bg-blue-600 text-white w-[100px] hover:bg-blue-800"
+              className="bg-blue-600 flex text-white w-[100px] hover:bg-blue-800"
             >
               <PencilIcon className="h-3 w-3" />
-              <span>
+              <span className='flex'>
                 Edit <span className="hidden sm:inline-block">profile</span>
               </span>
             </Button>

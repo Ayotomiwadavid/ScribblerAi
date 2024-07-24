@@ -156,11 +156,11 @@ const updateUser = async (req, res, next) => {
 };
 
 const passwordReset = async (req, res, next) => {
-  const { uid, currentPassword, newPassword } = req.body;
+  const { userId, currentPassword, newPassword } = req.body;
 
   try {
     // Fetch user document from Firestore
-    const userRef = db.collection("users").doc(uid);
+    const userRef = db.collection("users").doc(userId);
     const doc = await userRef.get();
     if (!doc.exists) {
       return res.status(404).json({
@@ -229,6 +229,7 @@ const fetchUserData = async (req, res, next) => {
 
     // Combine user data with conversations to prepare for frontend
     const responseData = {
+      userId: userId,
       ...userData,
       conversations: conversations,
     };
