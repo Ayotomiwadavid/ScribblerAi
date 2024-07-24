@@ -50,7 +50,7 @@ function Overview({ setSelectedIndex }) {
               className="bg-blue-600 flex text-white w-[100px] hover:bg-blue-800"
             >
               <PencilIcon className="h-3 w-3" />
-              <span className='flex'>
+              <span className='flex gap-2'>
                 Edit <span className="hidden sm:inline-block">profile</span>
               </span>
             </Button>
